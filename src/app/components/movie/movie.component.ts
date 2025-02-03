@@ -1,5 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-movie',
@@ -9,6 +10,11 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./movie.component.css'],
 })
 export class MovieComponent {
-  @Input() movie: any;
+  private router = inject(Router);
 
+  @Input() movie: any;
+  
+  goToMovieDetail(id: number): void {
+    this.router.navigate(['/movie', id]);
+  }
 }

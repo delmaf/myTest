@@ -17,12 +17,4 @@ export class MovieListComponent {
 
   // Access the movies resource
   movies = this.movieService.movies;
-
-  // Access the search query signal
-  searchQuery = this.movieService.query;
-
-  // Handle search input
-  onSearch(query: string): void {
-    this.movieService.setSearchQuery(query);
-  }
 }

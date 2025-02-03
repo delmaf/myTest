@@ -1,11 +1,12 @@
-<div class="bg-white shadow-lg rounded-lg overflow-hidden">
-    <img
-      [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path"
-      alt="{{ movie.title }}"
-      class="w-full h-64 object-cover"
-    />
-    <div class="p-4">
-      <h2 class="text-xl font-bold">{{ movie.title }}</h2>
-      <p class="text-gray-700">{{ movie.overview }}</p>
-    </div>
+<div class="bg-white shadow-lg rounded-lg overflow-hidden h-full">
+  <img
+    [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path"
+    alt="{{ movie.title }}"
+    class="w-full  pt-2 object-contain cursor-pointer"
+    (click)="goToMovieDetail(movie.id)"
+  />
+  <div class="p-4">
+    <h2 class="text-xl font-bold cursor-pointer text-center pb-2" (click)="goToMovieDetail(movie.id)">{{ movie.title }}</h2>
+    <p class="text-gray-700 text-center">{{ movie.overview }}</p>
   </div>
+</div>

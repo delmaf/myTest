@@ -11,9 +11,7 @@ import { RouterOutlet } from '@angular/router';
 
 })
 export class AppComponent {
-  
   title = 'Movie App';
-  
   isScrolled = signal(false);
 
   constructor() {
