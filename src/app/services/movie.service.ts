@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, ResourceRef, signal } from '@angular/core';
 import { resource } from '@angular/core';
 
 @Injectable({
@@ -9,17 +9,19 @@ export class MovieService {
   private baseUrl = 'https://api.themoviedb.org/3';
 
   // Signal for search query
-  query = signal('');
+  query = signal<string | null>(null);
+
+  // Signal for suggestions query
+  sugg = signal('');
 
   // Signal for movie ID
   movieId = signal<string>('');
 
-  // Resource for fetching movies
+  //Movie resource
   movies = resource<any[], { query: string }>({
-    request: () => ({ query: this.query() }),
-    loader: async ({ request, abortSignal }) => {
-      //ternart condition for fetching popular or by search
-      const url = request.query
+    request: () => ({ query: this.query() ?? '' }), // Pass the current query
+    loader: async ({ request, abortSignal }) => {      
+      const url = request.query.length !== 0
         ? `${this.baseUrl}/search/movie?api_key=${this.apiKey}&query=${request.query}`
         : `${this.baseUrl}/movie/popular?api_key=${this.apiKey}`;
 
@@ -34,10 +36,33 @@ export class MovieService {
     },
   });
 
-  // Resource for fetching movie details
-  movieDetails = resource<any, { id: string }>({
-    request: () => ({ id: this.movieId() }), // Pass the current movie ID
+  //Suggestions resource
+  suggestions = resource<any[], { query: string }>({
+    request: () => ({ query: this.sugg() }),
     loader: async ({ request, abortSignal }) => {
+      if (request.query.length === 0) {
+        return [];
+      }
+      const url =`${this.baseUrl}/search/movie?api_key=${this.apiKey}&query=${request.query}`
+
+      const response = await fetch(url, { signal: abortSignal });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch movies');
+      }
+
+      const data = await response.json();
+      return data.results;
+    },
+  });
+
+  //Movie details Resource
+  movieDetails = resource<any, { id: string }>({
+    request: () => ({ id: this.movieId() }),
+    loader: async ({ request, abortSignal }) => {
+      if (request.id.length === 0) {
+        return [];
+      }
       const url = `${this.baseUrl}/movie/${request.id}?api_key=${this.apiKey}`;
       const response = await fetch(url, { signal: abortSignal });
 
@@ -54,9 +79,14 @@ export class MovieService {
     this.query.set(query);
   }
 
+  // Method to update the suggestions
+  setSuggestionsQuery(query: string): void {
+    this.sugg.set(query);
+  }
+
   // Method to fetch movie details by ID
-  getMovieDetails(id: string) {
-    this.movieId.set(id); // Update the movieId signal to trigger the resource
-    return this.movieDetails; // Return the resource's value
+  getMovieDetails(id: string): ResourceRef<any> {
+    this.movieId.set(id); 
+    return this.movieDetails;
   }
 }

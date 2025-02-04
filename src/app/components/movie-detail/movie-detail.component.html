@@ -1,24 +1,52 @@
-<div class="container mx-auto p-4">
-    <!-- Display loading state -->
-    <div *ngIf="movie.isLoading()" class="text-center">Loading...</div>
-  
-    <!-- Display error state -->
-    <div *ngIf="movie.error()" class="text-red-500">
-      {{ movie.error() }}
-    </div>
-  
-    <!-- Display movie details -->
-    <div *ngIf="movie.value()" class="bg-white shadow-lg rounded-lg overflow-hidden">
-      <img
-        [src]="'https://image.tmdb.org/t/p/w500' + movie.value().poster_path"
-        alt="{{ movie.value().title }}"
-        class="w-full h-96 object-cover"
-      />
-      <div class="p-4">
-        <h1 class="text-2xl font-bold">{{ movie.value().title }}</h1>
-        <p class="text-gray-700">{{ movie.value().overview }}</p>
-        <p class="text-gray-600">Release Date: {{ movie.value().release_date }}</p>
-        <p class="text-gray-600">Rating: {{ movie.value().vote_average }}</p>
+<div class="container mx-auto p-6">
+  <!-- Display loading state -->
+  <div *ngIf="movie.isLoading()" class="text-center text-gray-500">Loading...</div>
+
+  <!-- Display error state -->
+  <div *ngIf="movie.error()" class="text-center text-red-500">
+    {{ movie.error() }}
+  </div>
+
+  <div *ngIf="movie.value()" class="bg-white shadow-xl rounded-xl overflow-hidden max-w-lg mx-auto">
+    <img
+      [src]="'https://image.tmdb.org/t/p/w500' + movie.value().poster_path"
+      alt="{{ movie.value().title }}"
+      class="w-full h-96 object-contain rounded-t-xl"
+    />
+    <div class="p-6">
+      <h1 class="text-3xl font-semibold text-gray-900">{{ movie.value().title }}</h1>
+
+      <p class="text-lg text-gray-600 mt-2">{{ movie.value().overview }}</p>
+
+      <div class="mt-4 text-gray-500">
+        <p class="font-bold">Release Date: <span class="font-normal ml-2">{{ movie.value().release_date }}</span></p>
+        <p class="font-bold">Rating: <span class="font-normal ml-2">{{ movie.value().vote_average }}</span></p>
+        <p class="font-bold">Runtime: <span class="font-normal ml-2">{{ movie.value().runtime }} minutes</span></p>
+        <p class="font-bold">Language: <span class="font-normal ml-2">{{ movie.value().original_language | uppercase }}</span></p>
+        <p class="font-bold">Genres: 
+          <span class="font-normal ml-2">
+            <ng-container *ngFor="let genre of movie.value().genres; let last = last">
+              {{ genre.name }}<ng-container *ngIf="!last">, </ng-container>
+            </ng-container>
+          </span>
+        </p>
+        <p class="font-bold">Production: <span class="font-normal ml-2">{{ movie.value().production_companies[0]?.name || 'N/A' }}</span></p>
+      </div>
+
+      <div class="mt-4 flex space-x-4">
+        <a [href]="'https://www.imdb.com/title/' + movie.value().imdb_id" target="_blank" class="flex items-center text-blue-500 hover:underline">
+          <img src="https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/171_Imdb_logo_logos-512.png" alt="imdb" class="w-[30px] h-[25px] mr-2">
+          IMDb
+        </a>
+        <a [href]="movie.value().homepage" target="_blank" class="flex items-center text-red-600 hover:underline">
+          <img 
+            src="https://images.ctfassets.net/y2ske730sjqp/1aONibCke6niZhgPxuiilC/2c401b05a07288746ddf3bd3943fbc76/BrandAssets_Logos_01-Wordmark.jpg?w=940" 
+            alt="imdb" 
+            class="w-[30px] h-[25px] mr-2"
+          >
+          Netflix
+        </a>
       </div>
     </div>
   </div>
+</div>
