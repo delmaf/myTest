@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, inject, signal, ViewChild, effect  } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -27,8 +27,17 @@ export class AppComponent {
   showDropdown = false;
   searchControl = new FormControl('');
 
-  constructor() {
-  }
+  // searchQuery = signal('');
+
+  // constructor(private movieService: MovieService) {
+  //   effect(() => {
+  //     if (this.searchQuery()) {
+  //       this.movieService.setSuggestionsQuery(this.searchQuery());
+  //     } else {
+  //       this.movieService.suggestions.set([]);
+  //     }
+  //   });
+  // }
 
   // Initialize the component
   ngOnInit(): void {

@@ -16,6 +16,17 @@
         (focus)="showDropdown = true"
         (blur)="showDropdown = false"
       />
+      <!-- <input
+        #searchInput
+        type="text"
+        class="w-full border p-2 rounded focus-visible:outline-none"
+        placeholder="Search for movies..."
+        [value]="searchQuery()"
+        (input)="searchQuery.set($event.target.value)"
+        (focus)="showDropdown = true"
+        (blur)="showDropdown = false"
+      /> -->
+
       @if(movieService.suggestions.value()?.length && showDropdown) {
         <ul class="absolute w-full bg-white border mt-1 rounded shadow-lg max-h-[440px] overflow-y-scroll">
           @for (movie of movieService.suggestions.value(); track movie.id) {
