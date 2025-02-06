@@ -1,16 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ElementRef, inject, signal, ViewChild, effect  } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, inject, signal, ViewChild, effect } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 import { MovieService } from './services/movie.service';
-import { FormControl } from '@angular/forms';
-import { startWith, debounceTime, distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, ReactiveFormsModule],
+  imports: [RouterOutlet, CommonModule, ReactiveFormsModule, MatProgressBarModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -24,58 +23,54 @@ export class AppComponent {
   
   title = 'Movie App';
   isScrolled = signal(false);
-  showDropdown = false;
-  searchControl = new FormControl('');
+  showDropdown = signal(false);
+  searchControl = signal('');
 
-  // searchQuery = signal('');
-
-  // constructor(private movieService: MovieService) {
-  //   effect(() => {
-  //     if (this.searchQuery()) {
-  //       this.movieService.setSuggestionsQuery(this.searchQuery());
-  //     } else {
-  //       this.movieService.suggestions.set([]);
-  //     }
-  //   });
-  // }
-
-  // Initialize the component
-  ngOnInit(): void {
-    this.initApp();
-  }
-
-  initApp() {
+  constructor() {
     window.addEventListener('scroll', () => {
       this.isScrolled.set(window.scrollY > 50);
-      this.showDropdown = false;
-      this.searchInput.nativeElement.blur();
+      this.showDropdown.set(false);
+      this.searchInput?.nativeElement?.blur();
     });
 
-    this.searchControl.valueChanges.pipe(
-      startWith(''),
-      debounceTime(400),
-      distinctUntilChanged(),
-    ).subscribe((filteredResults) => {
-      if(filteredResults) this.movieService.setSuggestionsQuery(filteredResults);
-      else this.movieService.suggestions.set([]);
+    let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    effect(() => {
+      const query = this.searchControl();
+  
+      if (debounceTimeout) {
+        clearTimeout(debounceTimeout);
+      }
+  
+      debounceTimeout = setTimeout(() => {
+        if (query) {
+          this.movieService.setSuggestionsQuery(query);
+        } else {
+          this.movieService.suggestions.set([]);
+        }
+      }, 400);
     });
+  }
+
+  onInput(value: any) {
+    this.searchControl.set(value);
   }
 
   onSearch(): void {
-    const query = this.searchControl.value;
+    const query = this.searchControl();
     if (query) {
       this.movieService.setSearchQuery(query);
     }
   }
 
   onSuggestionSelected(suggestion: any): void {
-    this.searchControl.setValue(suggestion.title); 
+    this.searchControl.set(suggestion.title);
     this.router.navigate(['/movie', suggestion.id]);
   }
 
   goHome() {
     this.router.navigate(['']);
-    this.searchControl.setValue('');
+    this.searchControl.set('');
     this.movieService.setSuggestionsQuery('');
     this.movieService.setSearchQuery('');
   }

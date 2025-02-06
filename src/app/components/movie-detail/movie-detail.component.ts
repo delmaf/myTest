@@ -6,7 +6,7 @@ import { MovieService } from '../../services/movie.service';
 @Component({
   selector: 'app-movie-detail',
   standalone: true,
-  imports: [CommonModule], // Import CommonModule for ngIf, etc.
+  imports: [CommonModule],
   templateUrl: './movie-detail.component.html',
   styleUrls: ['./movie-detail.component.css'],
 })

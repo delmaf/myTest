@@ -1,7 +1,4 @@
 <div class="container mx-auto p-6">
-  <!-- Display loading state -->
-  <div *ngIf="movie.isLoading()" class="text-center text-gray-500">Loading...</div>
-
   <!-- Display error state -->
   <div *ngIf="movie.error()" class="text-center text-red-500">
     {{ movie.error() }}
@@ -25,9 +22,11 @@
         <p class="font-bold">Language: <span class="font-normal ml-2">{{ movie.value().original_language | uppercase }}</span></p>
         <p class="font-bold">Genres: 
           <span class="font-normal ml-2">
-            <ng-container *ngFor="let genre of movie.value().genres; let last = last">
-              {{ genre.name }}<ng-container *ngIf="!last">, </ng-container>
-            </ng-container>
+            @for (genre of movie.value().genres; track $index; let last = $last) {
+              <ng-container>
+                {{ genre.name }}<ng-container *ngIf="!last">, </ng-container>
+              </ng-container>
+            }
           </span>
         </p>
         <p class="font-bold">Production: <span class="font-normal ml-2">{{ movie.value().production_companies[0]?.name || 'N/A' }}</span></p>
